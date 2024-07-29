@@ -20,7 +20,7 @@ app.get('/',(req,res)=>{
     res.json('Api Untuk Galeraz');
 });
 
-app.use('/user',authRoutes);
+app.use('/api/user',authRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
