@@ -13,7 +13,7 @@ function expiresAt(number, unit) {
 }
 
 async function register(req, res) {
-  return res.json(JWT_SECRET);
+  // return res.json(JWT_SECRET);
   const { name, username, email, password, address } = req.body;
   if (!name || !username || !email || !password || !address) {
     return res.status(400).json({
