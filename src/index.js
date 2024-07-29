@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/auth");
-const {connectToDatabase} = require("./models/prisma");
+// const {connectToDatabase} = require("./models/prisma");
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-connectToDatabase();
+// connectToDatabase();
 
 app.get('/',(req,res)=>{
     res.json('Api Untuk Galeraz');
