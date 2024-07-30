@@ -1,26 +1,25 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const bodyParser = require("body-parser");
-const authRoutes = require("./routes/auth");
-// const {connectToDatabase} = require("./models/prisma");
+const routes = require("./routes");
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+
+// Middleware setup
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// connectToDatabase();
-
-app.get('/',(req,res)=>{
-    res.json('Api Untuk Galeraz');
+// Routes
+app.get('/', (req, res) => {
+  res.json('Api Untuk Galeraz');
 });
 
-app.use('/api/user',authRoutes);
+app.use('/',routes)
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

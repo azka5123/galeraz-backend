@@ -15,7 +15,8 @@ model User {
   address    String
   email      String   @unique
   password   String
-  tokens     Token[] 
+  tokens     Token[]
+  posts      Post[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -31,4 +32,24 @@ model Token {
   updated_at DateTime @updatedAt
 }
 
+model Post {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String
+  title        String
+  albumId      String?
+  description  String
+  image        String
+  user         User     @relation(fields: [userId], references: [id])
+  album        Album?   @relation(fields: [albumId], references: [id], name: "PostAlbumRelation")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
 
+model Album {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  posts       Post[]   @relation("PostAlbumRelation") 
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
