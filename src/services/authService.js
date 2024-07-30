@@ -1,9 +1,8 @@
-// src/services/authService.js
 const { prisma } = require('../models/prisma');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const moment = require('moment-timezone');
-const customError = require('../utils/customError'); // Adjust the path as needed
+const customError = require('../utils/customError');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -12,11 +11,8 @@ function expiresAt(number, unit) {
 }
 
 const register = async ({ name, username, email, password, address }) => {
-  if (!name || !username || !email || !password || !address) {
-    throw new customError(400, 'All fields are required');
-  }
-
   try {
+    // console.log('Service received values:', { name, username, email, password, address });
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -56,10 +52,10 @@ const register = async ({ name, username, email, password, address }) => {
       const errorMessage = error.meta.target.includes('User_username_key')
         ? 'Username already exists'
         : 'Email already exists';
-      throw new customError(400, errorMessage);
+      throw new customError(400, errorMessage,error);
     }
 
-    throw new customError(500, 'Something went wrong');
+    throw new customError(500, 'Something went wrong', error);
   }
 };
 
@@ -68,12 +64,12 @@ const login = async ({ email, password }) => {
     const user = await prisma.user.findFirst({ where: { email } });
 
     if (!user) {
-      throw new customError(400, 'User not found');
+      throw new customError(400, 'User not found', error);
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new customError(400, 'Email or password is incorrect');
+      throw new customError(400, 'Email or password is incorrect', error);
     }
 
     const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, {
@@ -98,7 +94,7 @@ const login = async ({ email, password }) => {
     };
 
   } catch (error) {
-    throw new customError(500, error.message);
+    throw new customError(500, error.message, error);
   }
 };
 

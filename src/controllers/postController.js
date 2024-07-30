@@ -22,6 +22,30 @@ async function index(req, res) {
   }
 }
 
+async function show(req,res){
+  const id = req.params.id;
+
+  try{
+    const post = await postService.getPost(id);
+    return res.status(200).json(post);
+  }catch(error){
+    if (error instanceof customError) {
+      return res.status(error.statusCode).json({
+        status: 'error',
+        message: error.message,
+      });
+    }
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went wrong',
+      error: {
+        message: error.message,
+        error: error
+      },
+    })
+  }
+}
+
 async function store(req, res) {
   const { userId, title, albumId, description } = req.body;
 
@@ -46,7 +70,7 @@ async function store(req, res) {
 
   try {
     const imagePath = req.file.path;
-    const post = await postService.createPost(userId, title, albumId, description, imagePath);
+    const post = await postService.createPost({userId, title, albumId, description, imagePath});
     return res.status(201).json(post);
   } catch (error) {
     if (error instanceof customError) {
@@ -61,6 +85,7 @@ async function store(req, res) {
       message: 'Something went wrong',
       error: {
         message: error.message,
+        error: error
       },
     });
   }
@@ -68,5 +93,6 @@ async function store(req, res) {
 
 module.exports = {
   index,
+  show,
   store,
 };

@@ -27,6 +27,32 @@
             "Auth"
         ],
         "description": "",
+        "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "example": "azka"
+                  },
+                  "username": {
+                    "example": "zzzz5123"
+                  },
+                  "address": {
+                    "example": "padang"
+                  },
+                  "email": {
+                    "example": "cobadulu769@gmail.com"
+                  },
+                  "password":{
+                    "example": "123"
+                  }
+                }
+              }
+            }
+          ],
         "responses": {
           "201": {
             "description": "Created"
@@ -43,6 +69,23 @@
             "Auth"
         ],
         "description": "",
+        "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "example": "cobadulu769@gmail.com"
+                  },
+                  "password":{
+                    "example": "123"
+                  }
+                }
+              }
+            }
+          ],
         "responses": {
           "200": {
             "description": "OK"
