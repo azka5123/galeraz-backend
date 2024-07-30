@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const routes = require("./routes");
+const {connectToDatabase} = require("./models/prisma");
 
 dotenv.config();
 
@@ -13,6 +14,9 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Connect to database
+connectToDatabase();
 
 // Routes
 app.get('/', (req, res) => {
