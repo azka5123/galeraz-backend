@@ -1,6 +1,5 @@
 const authService = require('../services/authService');
-const customError = require('../utils/customError'); // Adjust the path as needed
-
+const customError = require('../utils/customError');
 const register = async (req, res) => {
   const { name, username, email, password, address } = req.body;
   if (!name || !username || !email || !password || !address) {
@@ -11,11 +10,13 @@ const register = async (req, res) => {
     const result = await authService.register({name, username, email, password, address});
     return res.status(201).json(result);
   } catch (error) {
-      return res.status(error.statusCode).json({
+    if (error instanceof customError) {
+      res.status(error.statusCode).json({
         status: 'error',
         message: error.message,
-        error: error,
+        error: error.error,
       });
+    }
   }
 };
 
@@ -28,11 +29,13 @@ const login = async (req, res) => {
     const result = await authService.login({email, password});
     return res.status(200).json(result);
   } catch (error) {
-      return res.status(error.statusCode).json({
+    if (error instanceof customError) {
+      res.status(error.statusCode).json({
         status: 'error',
         message: error.message,
-        error: error,
+        error: error.error,
       });
+    }
   }
 };
 

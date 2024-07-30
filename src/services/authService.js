@@ -64,12 +64,12 @@ const login = async ({ email, password }) => {
     const user = await prisma.user.findFirst({ where: { email } });
 
     if (!user) {
-      throw new customError(400, 'User not found', error);
+      throw new customError(400, 'User not found',);
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new customError(400, 'Email or password is incorrect', error);
+      throw new customError(400, 'Email or password is incorrect');
     }
 
     const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, {

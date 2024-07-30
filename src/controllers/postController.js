@@ -12,13 +12,6 @@ async function index(req, res) {
         message: error.message,
       });
     }
-    return res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong',
-      error: {
-        message: error.message,
-      },
-    });
   }
 }
 
@@ -35,14 +28,6 @@ async function show(req,res){
         message: error.message,
       });
     }
-    return res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong',
-      error: {
-        message: error.message,
-        error: error
-      },
-    })
   }
 }
 
@@ -79,15 +64,6 @@ async function store(req, res) {
         message: error.message,
       });
     }
-
-    return res.status(500).json({
-      status: 'error',
-      message: 'Something went wrong',
-      error: {
-        message: error.message,
-        error: error
-      },
-    });
   }
 }
 
