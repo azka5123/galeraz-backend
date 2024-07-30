@@ -11,6 +11,15 @@ async function index(req, res) {
         status: 'error',
         message: error.message,
       });
+    }else{
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
+        error: {
+          message: error.message,
+          error: error
+        }
+      });
     }
   }
 }
@@ -26,6 +35,15 @@ async function show(req,res){
       return res.status(error.statusCode).json({
         status: 'error',
         message: error.message,
+      });
+    }else{
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
+        error: {
+          message: error.message,
+          error: error
+        }
       });
     }
   }
@@ -62,6 +80,15 @@ async function store(req, res) {
       return res.status(error.statusCode).json({
         status: 'error',
         message: error.message,
+      });
+    }else{
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
+        error: {
+          message: error.message,
+          error: error
+        }
       });
     }
   }

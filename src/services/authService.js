@@ -60,6 +60,7 @@ const register = async ({ name, username, email, password, address }) => {
 };
 
 const login = async ({ email, password }) => {
+  // console.log('Login service received values:', { email, password });
   try {
     const user = await prisma.user.findFirst({ where: { email } });
 
