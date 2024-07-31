@@ -66,12 +66,12 @@ async function store(req, res) {
     }
 
     const imageFileName = getImageFileName(req);
-    if (!imageFileName) {
-        return res.status(400).json({
-            status: 'error',
-            message: 'Image is required',
-        });
-    }
+    // if (!imageFileName) {
+    //     return res.status(400).json({
+    //         status: 'error',
+    //         message: 'Image is required',
+    //     });
+    // }
 
     return res.json({userId,title,albumId,description,imageFileName})
     try {
