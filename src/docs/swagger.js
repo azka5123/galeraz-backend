@@ -1,3 +1,5 @@
+const path = require('path');
+
 const swaggerOptions = {
   swaggerDefinition: {
       openapi: '3.0.0',
@@ -28,7 +30,9 @@ const swaggerOptions = {
           bearerAuth: []
       }]
   },
-  apis: ['./src/docs/swagger/*.js']
+//   apis: [path.resolve(__dirname, '../docs/swagger/*.js')]
+  apis: [path.resolve(__dirname, '../routes/*.js')]
 };
+
 
 module.exports = swaggerOptions
