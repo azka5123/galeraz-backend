@@ -73,6 +73,7 @@ async function store(req, res) {
         });
     }
 
+    return res.json({userId,title,albumId,description,imageFileName})
     try {
       // console.log(userId,title,albumId,description,imageFileName);
         const post = await postService.createPost(userId, title, albumId, description, imageFileName);
