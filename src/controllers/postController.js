@@ -72,8 +72,8 @@ async function store(req, res) {
     //         message: 'Image is required',
     //     });
     // }
-
-    return res.json({userId,title,albumId,description,imageFileName})
+    const test = req.file;
+    return res.json({userId,title,albumId,description,imageFileName,test})
     try {
       // console.log(userId,title,albumId,description,imageFileName);
         const post = await postService.createPost(userId, title, albumId, description, imageFileName);
