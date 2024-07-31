@@ -32,8 +32,9 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  // console.log('Login controller received values:', { email, password });
+  console.log('Login controller received values:', { email, password }, req.body);
   try {
+    // res.json({ email, password });
     if (!email || !password) {
       throw new customError(400, 'All fields are required');
     }
@@ -45,15 +46,6 @@ const login = async (req, res) => {
         status: 'error',
         message: error.message,
         error: error.error,
-      });
-    }else{
-      res.status(500).json({
-        status: 'error',
-        message: 'Internal Server Error',
-        error: {
-          message: error.message,
-          error: error
-        }
       });
     }
   }

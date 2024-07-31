@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const routes = require("./routes");
-const {connectToDatabase} = require("./models/prisma");
+// const {connectToDatabase} = require("./models/prisma");
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Connect to database
-connectToDatabase();
+// connectToDatabase();
 
 // Routes
 app.get('/', (req, res) => {

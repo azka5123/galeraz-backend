@@ -8,12 +8,19 @@ const storage = multer.diskStorage({
         cb(null, uploadPath);
     },
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+        if (!req.user || !req.user.username) {
+            return cb(new Error('User not authenticated'));
+        }
+        
+        // Use username from req.user and add a unique identifier
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const filename = `${req.user.username}-${uniqueSuffix}${path.extname(file.originalname)}`;
+        cb(null, filename);
     }
 });
 
 // Init upload
-const upload = multer({
+const Multer = multer({
     storage: storage,
     limits: { fileSize: 10000000 }, // 10MB limit
     fileFilter: function (req, file, cb) {
@@ -37,4 +44,4 @@ function checkFileType(file, cb) {
     }
 }
 
-module.exports = { upload };
+module.exports = { Multer };
