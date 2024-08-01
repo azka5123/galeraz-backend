@@ -62,13 +62,8 @@ async function index(req, res) {
     const posts = await postService.getAllPosts();
     return res.status(200).json(posts);
   } catch (error) {
-    if (error instanceof customError) {
-      return res.status(error.statusCode).json({
-        status: 'error',
-        message: error.message,
-        error: error
-      });
-    }
+    return handleErrorResponse(res, error);
+
   }
 }
 
@@ -79,13 +74,7 @@ async function show(req,res){
     const post = await postService.getPost(id);
     return res.status(200).json(post);
   }catch(error){
-    if (error instanceof customError) {
-      return res.status(error.statusCode).json({
-        status: 'error',
-        message: error.message,
-        error: error
-      });
-    }
+    return handleErrorResponse(res, error);
   }
 }
 

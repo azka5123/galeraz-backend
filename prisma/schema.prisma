@@ -17,6 +17,7 @@ model User {
   password   String
   tokens     Token[]
   posts      Post[]
+  albums     Album[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -48,9 +49,11 @@ model Post {
 
 model Album {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String
   name        String
   description String
   posts       Post[]   @relation("PostAlbumRelation") 
+  user        User     @relation(fields: [userId], references: [id])
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 }
