@@ -32,7 +32,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  console.log('Login controller received values:', { email, password }, req.body);
+  // console.log('Login controller received values:', { email, password }, req.body);
   try {
     // res.json({ email, password });
     if (!email || !password) {

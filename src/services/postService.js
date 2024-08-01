@@ -7,21 +7,12 @@ function handleErrorResponse(error, message) {
     throw new customError(500, `${message}: ${error.message}`);
 }
 
-// Helper function to delete a file
-async function deleteFile(fileName) {
-    const filePath = `../public/images/${fileName}`;
-    try {
-        await fs.unlink(filePath);
-    } catch (err) {
-        handleErrorResponse(err, 'Error deleting file');
-    }
-}
-
 async function getAllPosts() {
     try {
         const posts = await prisma.post.findMany({
-            include: { album: true, user: true },
+            include: {  user: true, album: true },
         });
+        
         return {
             status: "success",
             message: "Posts fetched successfully",
@@ -38,6 +29,7 @@ async function getPost(idPost) {
             where: { id: idPost },
             include: { album: true, user: true },
         });
+        console.log(post);
         if (!post) {
             throw new customError(404, 'Post not found');
         }
@@ -58,15 +50,20 @@ async function createPost(userId, title, albumId, description, blob) {
         if (!user) {
             throw new customError(404, 'User not found');
         }
+        const postData = {
+            userId,
+            title,
+            description,
+            image: resBlob.pathname,
+            imageUrl: resBlob.url,
+        };
+
+        if (albumId) {
+            postData.albumId = albumId;
+        }
+
         await prisma.post.create({
-            data: {
-                userId,
-                title,
-                albumId,
-                description,
-                image: resBlob.pathname,
-                imageUrl: resBlob.url,
-            },
+            data: postData,
         });
         return {
             status: "success",
@@ -86,21 +83,24 @@ async function updatePost(id, title, albumId, description, blob) {
 
         const resBlob = await put(blob[0].name, blob[0].data, { access: "public" });
         const oldFilename = post.imageUrl;
-
-        await prisma.post.update({
-            where: { id },
-            data: {
-                title,
-                albumId,
-                description,
-                image: resBlob.pathname,
-                imageUrl: resBlob.url,
-            },
-        });
-
         if (oldFilename) {
             await del(oldFilename);
         }
+        const updateData = {
+            title,
+            description,
+            image: resBlob.pathname,
+            imageUrl: resBlob.url,
+        };
+
+        if (albumId) {
+            updateData.albumId = albumId;
+        }
+
+        await prisma.post.update({
+            where: { id },
+            data: updateData,
+        });
 
         return {
             status: "success",
