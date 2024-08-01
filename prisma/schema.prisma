@@ -39,6 +39,7 @@ model Post {
   albumId      String?
   description  String
   image        String
+  imageUrl     String
   user         User     @relation(fields: [userId], references: [id])
   album        Album?   @relation(fields: [albumId], references: [id], name: "PostAlbumRelation")
   created_at   DateTime @default(now())

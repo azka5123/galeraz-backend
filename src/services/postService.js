@@ -1,25 +1,26 @@
 const { prisma } = require("../models/prisma");
 const customError = require('../utils/customError');
-const fs = require('fs').promises; // Use fs.promises for async/await
-const path = require('path');
+const { put, del } = require('@vercel/blob');
+
+// Helper function for error handling
+function handleErrorResponse(error, message) {
+    throw new customError(500, `${message}: ${error.message}`);
+}
 
 // Helper function to delete a file
 async function deleteFile(fileName) {
-    const filePath = path.join(__dirname, `../public/images/${fileName}`);
+    const filePath = `../public/images/${fileName}`;
     try {
         await fs.unlink(filePath);
     } catch (err) {
-        throw new customError(500, `Error deleting file: ${err.message}`);
+        handleErrorResponse(err, 'Error deleting file');
     }
 }
 
 async function getAllPosts() {
     try {
         const posts = await prisma.post.findMany({
-            include: {
-                album: true,
-                user: true,
-            }
+            include: { album: true, user: true },
         });
         return {
             status: "success",
@@ -27,7 +28,7 @@ async function getAllPosts() {
             data: posts,
         };
     } catch (error) {
-        throw new customError(500, `Error fetching posts: ${error.message}`);
+        handleErrorResponse(error, 'Error fetching posts');
     }
 }
 
@@ -35,13 +36,10 @@ async function getPost(idPost) {
     try {
         const post = await prisma.post.findFirst({
             where: { id: idPost },
-            include: {
-                album: true,
-                user: true,
-            }
+            include: { album: true, user: true },
         });
-        if(!post){
-            throw new customError(404, `Post not found`);
+        if (!post) {
+            throw new customError(404, 'Post not found');
         }
         return {
             status: "success",
@@ -49,16 +47,16 @@ async function getPost(idPost) {
             data: post,
         };
     } catch (error) {
-        throw new customError(500, `Error fetching post: ${error.message}`);
+        handleErrorResponse(error, 'Error fetching post');
     }
 }
 
-async function createPost(userId, title, albumId, description, imageFileName) {
+async function createPost(userId, title, albumId, description, blob) {
     try {
-        // console.log(userId);
-        const user = await prisma.user.findFirst({where:{id:userId}})
-        if(!user){
-            throw new customError(404, `User not found`);
+        const resBlob = await put(blob[0].name, blob[0].data, { access: "public" });
+        const user = await prisma.user.findFirst({ where: { id: userId } });
+        if (!user) {
+            throw new customError(404, 'User not found');
         }
         await prisma.post.create({
             data: {
@@ -66,7 +64,8 @@ async function createPost(userId, title, albumId, description, imageFileName) {
                 title,
                 albumId,
                 description,
-                image: imageFileName,
+                image: resBlob.pathname,
+                imageUrl: resBlob.url,
             },
         });
         return {
@@ -74,39 +73,41 @@ async function createPost(userId, title, albumId, description, imageFileName) {
             message: "Post created successfully",
         };
     } catch (error) {
-        await deleteFile(imageFileName);
-        throw new customError(500, `Error creating post: ${error.message}`);
+        handleErrorResponse(error, 'Error creating post');
     }
 }
 
-async function updatePost(id, title, albumId, description, imageFileName) {
-    const post = await prisma.post.findFirst({ where: { id } });
-    if (!post) {
-        await deleteFile(imageFileName);
-        throw new customError(404, `Post not found`);
-    }
-
-    const oldFilename = post.image;
+async function updatePost(id, title, albumId, description, blob) {
     try {
+        const post = await prisma.post.findFirst({ where: { id } });
+        if (!post) {
+            throw new customError(404, 'Post not found');
+        }
+
+        const resBlob = await put(blob[0].name, blob[0].data, { access: "public" });
+        const oldFilename = post.imageUrl;
+
         await prisma.post.update({
             where: { id },
             data: {
                 title,
                 albumId,
                 description,
-                image: imageFileName,
+                image: resBlob.pathname,
+                imageUrl: resBlob.url,
             },
         });
+
         if (oldFilename) {
-            await deleteFile(oldFilename);
+            await del(oldFilename);
         }
+
         return {
             status: "success",
             message: "Post updated successfully",
         };
     } catch (error) {
-        await deleteFile(imageFileName);
-        throw new customError(500, `Error updating post: ${error.message}`);
+        handleErrorResponse(error, 'Error updating post');
     }
 }
 
@@ -114,13 +115,14 @@ async function deletePost(id) {
     try {
         const post = await prisma.post.findFirst({ where: { id } });
         if (!post) {
-            throw new customError(404, `Post not found`);
+            throw new customError(404, 'Post not found');
         }
 
-        const filename = post.image;
+        const filename = post.imageUrl;
         await prisma.post.delete({ where: { id } });
+        
         if (filename) {
-            await deleteFile(filename);
+            await del(filename);
         }
 
         return {
@@ -128,7 +130,7 @@ async function deletePost(id) {
             message: "Post deleted successfully",
         };
     } catch (error) {
-        throw new customError(500, `Error deleting post: ${error.message}`);
+        handleErrorResponse(error, 'Error deleting post');
     }
 }
 

@@ -5,6 +5,7 @@ const postRoutes = require('./post');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerOptions = require('../docs/swagger');
+const fileUpload = require("express-fileupload");
 
 const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
 
@@ -18,6 +19,8 @@ router.use('/api-docs/v1', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {
         '.swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }',
     customCssUrl: CSS_URL,
 }));
+
+router.use(fileUpload());
 
 router.use('/api/auth', authRoutes);
 
