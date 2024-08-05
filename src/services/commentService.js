@@ -36,12 +36,13 @@ async function createComment(postId,userId, content) {
 async function deleteComment( commentId,userId,) {
     const checkComment = await prisma.comment.findFirst({
         where: {
-            id: commentId
+            id: commentId,
+            userId,
         }
     })
 
     if(!checkComment) {
-        throw new customError(404, "Invalid comment ID");
+        throw new customError(404, "Invalid comment ID or user ID");
     }
     try{
         await prisma.comment.deleteMany({
