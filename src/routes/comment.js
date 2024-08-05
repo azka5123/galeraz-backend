@@ -91,7 +91,7 @@ module.exports = router;
  *         schema:
  *           type: string
  *         required: true
- *         description: The ID of the post to remove the comment from
+ *         description: The ID of the comment to remove the comment from
  *     responses:
  *       200:
  *         description: Comment removed successfully
@@ -118,7 +118,7 @@ module.exports = router;
  *                   example: error
  *                 message:
  *                   type: string
- *                   example: Invalid post ID
+ *                   example: Invalid comment ID or user ID
  *       500:
  *         description: Internal Server Error
  *         content:
