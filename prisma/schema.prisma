@@ -18,6 +18,8 @@ model User {
   tokens     Token[]
   posts      Post[]
   albums     Album[]
+  likes      Like[]
+  comments   Comment[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -43,6 +45,8 @@ model Post {
   imageUrl     String
   user         User     @relation(fields: [userId], references: [id])
   album        Album?   @relation(fields: [albumId], references: [id], name: "PostAlbumRelation")
+  likes        Like[]
+  comments     Comment[]
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 }
@@ -56,4 +60,26 @@ model Album {
   user        User     @relation(fields: [userId], references: [id])
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+model Like {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  postId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+}
+
+model Comment {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  userId    String     @db.ObjectId
+  postId    String     @db.ObjectId
+  user      User       @relation(fields: [userId], references: [id])
+  post      Post       @relation(fields: [postId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }

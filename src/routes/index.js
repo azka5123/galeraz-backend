@@ -3,6 +3,8 @@ const checkAuth = require('../middleware/checkAuth')
 const authRoutes = require('./auth');
 const postRoutes = require('./post');
 const albumRoutes = require('./album');
+const likeRoutes = require('./like');
+const commentRoutes = require('./comment');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerOptions = require('../docs/swagger');
@@ -28,5 +30,9 @@ router.use('/api/auth', authRoutes);
 router.use('/api/post', checkAuth, postRoutes);
 
 router.use('/api/album', checkAuth, albumRoutes);
+
+router.use('/api/like', checkAuth, likeRoutes);
+
+router.use('/api/comment', checkAuth, commentRoutes);
 
 module.exports = router;

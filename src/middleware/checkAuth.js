@@ -1,6 +1,11 @@
 const { prisma } = require("../models/prisma");
-const JWT_SECRET = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
+const moment = require('moment-timezone');
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined in environment variables');
+}
 
 async function checkAuth(req, res, next) {
     const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -15,7 +20,7 @@ async function checkAuth(req, res, next) {
         // Periksa token di database
         const checkTokenDatabase = await prisma.token.findFirst({
             where: { token },
-            include:{
+            include: {
                 user: true
             }
         });
@@ -30,14 +35,18 @@ async function checkAuth(req, res, next) {
         // Verifikasi token
         const decoded = jwt.verify(token, JWT_SECRET);
 
+        // Konversi expiresAt dari UTC ke UTC+7 (Asia/Jakarta)
+        const expiresAtUTC = moment.utc(checkTokenDatabase.expiresAt);
+        const expiresAtJakarta = expiresAtUTC.tz('Asia/Jakarta');
+
         // Periksa waktu kadaluarsa token
-        if (checkTokenDatabase.expiresAt < new Date()) {
+        if (expiresAtJakarta.isBefore(moment())) {
             // Hapus token dari database jika sudah kadaluarsa
             await prisma.token.delete({
-                where: { token }
+                where: { id: checkTokenDatabase.id }
             });
 
-            return res.status(400).json({ 
+            return res.status(401).json({ 
                 status: 'error',
                 message: 'Expired Token'
             });
@@ -49,18 +58,23 @@ async function checkAuth(req, res, next) {
             username: checkTokenDatabase.user.username,
             email: checkTokenDatabase.user.email,
             address: checkTokenDatabase.user.address
-
         };
+        // return res.json(req.user);
 
         next();
     } catch (error) {
         if (error.name === "TokenExpiredError") {
             // Token kadaluarsa
             await prisma.token.delete({
-                where: { token }
+                where: { id: checkTokenDatabase.id }
+            });
+            return res.status(401).json({ 
+                status: 'error',
+                message: 'Expired Token'
             });
         }
 
+        console.error('Internal Server Error:', error);
         res.status(500).json({ 
             status: 'error', 
             message: 'Internal Server Error',
