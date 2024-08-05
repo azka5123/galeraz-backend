@@ -5,7 +5,7 @@ function handleErrorResponse(error, message) {
   throw new customError(500, `${message}: ${error.message}`);
 }
 
-async function createLike(userId, postId) {
+async function createLike(postId,userId, ) {
     const checkPost = await prisma.post.findFirst({
         where: {
             id: postId
@@ -31,7 +31,7 @@ async function createLike(userId, postId) {
     }
 }
 
-async function deleteLike(userId, postId) {
+async function deleteLike(postId,userId, ) {
     // console.log(userId, postId);
     try{
         await prisma.like.deleteMany({
