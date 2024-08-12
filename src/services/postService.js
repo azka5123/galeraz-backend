@@ -10,36 +10,96 @@ function handleErrorResponse(error, message) {
 async function getAllPosts() {
   try {
     const posts = await prisma.post.findMany({
-      include: { user: true, album: true },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            address: true,
+            email: true,
+          },
+        },
+        album: {
+          select: {
+            name: true,
+            description: true,
+          },
+        },
+      },
     });
+
+    const postsWithLikes = await Promise.all(
+      posts.map(async (post) => {
+        const likeCount = await prisma.like.count({
+          where: {
+            postId: post.id,
+          },
+        });
+
+        return {
+          ...post,
+          likeCount,
+        };
+      })
+    );
 
     return {
       status: "success",
       message: "Posts fetched successfully",
-      data: posts,
+      data: postsWithLikes,
     };
   } catch (error) {
-    handleErrorResponse(error, "Error fetching posts");
+    return handleErrorResponse(error, "Error fetching posts");
   }
 }
+
 
 async function getPost(idPost) {
   try {
     const post = await prisma.post.findFirst({
       where: { id: idPost },
-      include: { album: true, user: true },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            address: true,
+            email: true,
+          },
+        },
+        album: {
+          select: {
+            name: true,
+            description: true,
+          },
+        },
+      },
     });
-    console.log(post);
+
     if (!post) {
-      throw new customError(404, "Post not found");
+      throw new CustomError(404, "Post not found");
     }
+
+    const likeCount = await prisma.like.count({
+      where: {
+        postId: post.id,
+      },
+    });
+
+    const postWithLikes = {
+      ...post,
+      likeCount,
+    };
+
     return {
       status: "success",
       message: "Post fetched successfully",
-      data: post,
+      data: postWithLikes,
     };
   } catch (error) {
-    handleErrorResponse(error, "Error fetching post");
+    return handleErrorResponse(error, "Error fetching post");
   }
 }
 
