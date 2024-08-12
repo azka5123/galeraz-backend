@@ -110,8 +110,12 @@ async function createPost(userId, title, albumId, description, blob) {
     if (!user) {
       throw new customError(404, "User not found");
     }
-    if (albumId == "") {
+
+    if (!albumId || albumId === "") {
       albumId = null;
+    } else if (!/^[a-fA-F0-9]{24}$/.test(albumId)) {
+      await del(resBlob.pathname);
+      throw new customError(400, "Invalid album ID");
     }
 
     await prisma.post.create({

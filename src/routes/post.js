@@ -96,7 +96,7 @@ module.exports = router;
  *                       example: My First Post
  *                     albumId:
  *                       type: string
- *                       example: 12345
+ *                       example: 66b9c632888d2700e4687fed
  *                     description:
  *                       type: string
  *                       example: This is a description of my first post.
@@ -161,7 +161,7 @@ module.exports = router;
  *                 example: My First Post
  *               albumId:
  *                 type: string
- *                 example: 12345
+ *                 example: 66b9c632888d2700e4687fed
  *               description:
  *                 type: string
  *                 example: This is a description of my first post.
@@ -248,7 +248,7 @@ module.exports = router;
  *                 example: Updated Post Title
  *               albumId:
  *                 type: string
- *                 example: 12345
+ *                 example: 66b9c632888d2700e4687fed
  *               description:
  *                 type: string
  *                 example: Updated description for the post.
